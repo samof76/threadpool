@@ -57,6 +57,8 @@ import traceback
 
 
 # exceptions
+Empty = Queue.Empty
+
 class NoResultsPending(Exception):
     """All work requests have been processed."""
     pass
@@ -145,7 +147,7 @@ class WorkerThread(threading.Thread):
             # the while loop again, to give the thread a chance to exit.
             try:
                 request = self._requests_queue.get(True, self._poll_timeout)
-            except Queue.Empty:
+            except Empty:
                 continue
             else:
                 if self._dismissed.isSet():
@@ -315,7 +317,7 @@ class ThreadPool:
                        (request.exception and request.exc_callback):
                     request.callback(request, result)
                 del self.workRequests[request.requestID]
-            except Queue.Empty:
+            except Empty:
                 break
 
     def wait(self):
